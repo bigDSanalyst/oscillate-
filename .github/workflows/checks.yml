@@ -1,0 +1,14 @@
+name: checks
+on: [push, pull_request]
+jobs:
+  run-checks:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install -e '.[dev]'
+      # A group that does not run is not a group that passed: run_checks.py
+      # exits 0 only when every group ran and passed.
+      - run: python run_checks.py
