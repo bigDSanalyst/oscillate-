@@ -1,6 +1,6 @@
 # Status
 
-**Last updated:** commit 1, before the first `[run]` of `run_checks.py`.
+**Last updated:** commit 2, runtime drafted; sweep not yet run.
 
 Every claim in this repository carries one of these markers:
 
@@ -33,10 +33,16 @@ what runs are findings.
 | `core/subresultant.py` | `[t]` | `test_core.py::test_bezout_resultant_identity` |
 | `core/observable.py` | `[t]` | `test_core.py::test_fit_recovers_known_modes`, `test_structure.py` |
 | `growth/tracker.py` | `[t]` | `test_growth.py` (six tests) |
+| `runtime/predictions.py` | `[t]` | register; hashed with `CONFIG` (D5) |
+| `runtime/body.py` | `[t]` | none yet; first check is the sweep |
+| `runtime/field.py` | `[t]` | none yet; first check is the sweep |
+| `runtime/detector.py` | `[t]` | uses the checked `core/subresultant.py` functions (D3) |
+| `runtime/harness.py` | `[t]` | none yet; first check is the sweep |
+| `runtime/sweep.py` | `[t]` | pre-flights `run_checks.py`; refuses on failure |
 
-The runtime modules — `predictions.py`, `body.py`, `field.py`, `detector.py`,
-`harness.py`, `sweep.py` — arrive in commit 2. Until then, every claim in this
-file is about the three modules above.
+The runtime modules import cleanly; none of them has executed a sweep.
+Their first check is the sweep itself, which must not run before the
+register hash is OTS-anchored.
 
 ## What is run
 
@@ -64,6 +70,8 @@ ground truth.
 | `test_flapping_is_silent` | sub-W episodes | birth channel (A10) |
 | `test_structure_identity` | same fp, different tick | identity policy |
 | `test_closure` | verified + quiet | closure predicate |
+| `test_rel_disc_is_dimensionless` | rel_disc in [0, 1], scale-invariant | discriminant normalisation (A7, A18) |
+| `test_quiet_is_counted_from_the_leaf` | quiet ticks counted from the leaf | closure quiet-counter reset (A18) |
 
 Run order is load-bearing: `test_fit_recovers_known_modes` fails on the
 module as it existed before A1, and every check after it consumes the fit.
@@ -71,9 +79,9 @@ If that check fails, nothing downstream means anything.
 
 ## Predictions
 
-The register is `src/oscillate/runtime/predictions.py`, which arrives in
-commit 2. Seven entries, one conditioned. The register's `sha256` is
-recorded in the trace header at first `[run]`; a mismatch between the
+The register is `src/oscillate/runtime/predictions.py`. Seven entries,
+one conditioned. The register's `sha256` covers the predictions and the
+`CONFIG` they are conditioned on (A19), and is recorded in the trace header at first `[run]`; a mismatch between the
 recorded hash and a trace header means the register was edited after
 the run.
 
@@ -100,6 +108,12 @@ Every bug found in the drafting of this repository, and how it was caught.
 | A15 | `_growth_suite()` referenced but never defined | Second-read | Sweep pre-flights `run_checks.py` |
 | A16 | numpy scalars in JSONL rows | Serialization review | `float()` at boundary |
 | A17 | `open("x")` without `try/finally` | Review | Handle closed in `finally` |
+| A18 | Two checks could not fail: nothing checked `rel_disc` normalisation (A7's argmin is the same unnormalised), and `test_closure` waited long enough that closure fired without the quiet counter being reset at the leaf | Mutation: each bug put back one at a time; these two survived the suite | `test_rel_disc_is_dimensionless`, `test_quiet_is_counted_from_the_leaf`; each fails on its mutant |
+| A19 | Register hash covered `PREDICTIONS` only; P4 is conditioned on `T` and `W`, so `CONFIG` could be edited after anchoring without the anchored hash changing | Review of what the anchor binds | `register_sha256()` hashes `{"predictions", "config"}` (D5) |
+
+A18 is the mirror class: checks described as falsifying a bug that
+could not fail on it. Found by putting each audit-drawer bug back and
+watching the suite: nine of eleven were caught, these two were not.
 
 A3, A13, A15 are one class: code described as running that had never
 resolved. The last two landed in the turn that introduced the `[t]`/
