@@ -1,6 +1,6 @@
 # Status
 
-**Last updated:** commit 2, runtime drafted; sweep not yet run.
+**Last updated:** register anchored (proof pending); sweep not yet run.
 
 Every claim in this repository carries one of these markers:
 
@@ -84,6 +84,15 @@ one conditioned. The register's `sha256` covers the predictions and the
 `CONFIG` they are conditioned on (A19), and is recorded in the trace header at first `[run]`; a mismatch between the
 recorded hash and a trace header means the register was edited after
 the run.
+
+**Register anchored, proof pending.** `run-logs/register.json` is the exact
+byte string `register_sha256()` hashes:
+`c3d7caa04431a9fe81fc8a91d6a98e2cfa67b7cb02f53616bb78c332c90b4114`.
+`run-logs/register.json.ots` was stamped on 2026-10-05 against four
+calendars (alice and bob at opentimestamps.org, finney at eternitywall,
+catallaxy) and is committed in pending state, as the OTS protocol below
+says. The sweep does not run until `ots upgrade` shows a Bitcoin block
+attestation for it, so that the register's block precedes the trace's.
 
 ## Audit drawer
 
