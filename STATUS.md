@@ -1,6 +1,6 @@
 # Status
 
-**Last updated:** register anchored (proof pending); sweep not yet run.
+**Last updated:** register anchor confirmed in Bitcoin (block 970001); sweep not yet run.
 
 Every claim in this repository carries one of these markers:
 
@@ -85,14 +85,20 @@ one conditioned. The register's `sha256` covers the predictions and the
 recorded hash and a trace header means the register was edited after
 the run.
 
-**Register anchored, proof pending.** `run-logs/register.json` is the exact
+**Register anchored, proof confirmed.** `run-logs/register.json` is the exact
 byte string `register_sha256()` hashes:
 `c3d7caa04431a9fe81fc8a91d6a98e2cfa67b7cb02f53616bb78c332c90b4114`.
 `run-logs/register.json.ots` was stamped on 2026-10-05 against four
 calendars (alice and bob at opentimestamps.org, finney at eternitywall,
-catallaxy) and is committed in pending state, as the OTS protocol below
-says. The sweep does not run until `ots upgrade` shows a Bitcoin block
-attestation for it, so that the register's block precedes the trace's.
+catallaxy) and first committed in pending state. On 2026-11-01 `ots upgrade`
+returned a Bitcoin block header attestation from each calendar, at heights
+970001, 970002, 970029 and 970074; the upgraded proof replaces the pending
+one. The earliest, block 970001, is the register's anchor: the sweep's trace
+must be anchored in a later block. Each attestation's merkle root was
+checked on 2026-11-01 against the block's merkle root as served by one
+public explorer (mempool.space); all four match. That is not a check
+against a Bitcoin node of our own: `ots verify` needs one, and neither the
+upgrade environment nor CI has it.
 
 ## Audit drawer
 
