@@ -94,9 +94,11 @@ catallaxy) and first committed in pending state. On 2026-11-01 `ots upgrade`
 returned a Bitcoin block header attestation from each calendar, at heights
 970001, 970002, 970029 and 970074; the upgraded proof replaces the pending
 one. The earliest, block 970001, is the register's anchor: the sweep's trace
-must be anchored in a later block. Not yet checked: each attestation's
-merkle root against an independent copy of the block header (`ots verify`
-needs a Bitcoin node, which neither the upgrade environment nor CI has).
+must be anchored in a later block. Each attestation's merkle root was
+checked on 2026-11-01 against the block's merkle root as served by one
+public explorer (mempool.space); all four match. That is not a check
+against a Bitcoin node of our own: `ots verify` needs one, and neither the
+upgrade environment nor CI has it.
 
 ## Audit drawer
 
