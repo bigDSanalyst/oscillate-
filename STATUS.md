@@ -125,10 +125,17 @@ Every bug found in the drafting of this repository, and how it was caught.
 | A17 | `open("x")` without `try/finally` | Review | Handle closed in `finally` |
 | A18 | Two checks could not fail: nothing checked `rel_disc` normalisation (A7's argmin is the same unnormalised), and `test_closure` waited long enough that closure fired without the quiet counter being reset at the leaf | Mutation: each bug put back one at a time; these two survived the suite | `test_rel_disc_is_dimensionless`, `test_quiet_is_counted_from_the_leaf`; each fails on its mutant |
 | A19 | Register hash covered `PREDICTIONS` only; P4 is conditioned on `T` and `W`, so `CONFIG` could be edited after anchoring without the anchored hash changing | Review of what the anchor binds | `register_sha256()` hashes `{"predictions", "config"}` (D5) |
+| A20 | A19's fix had no check: nothing compared `register_sha256()` with the anchored hash, so hashing `PREDICTIONS` alone again, or editing `CONFIG` after anchoring, passed the suite | `mutation_test.py`: the A19 mutant survived, the only one of nine that did | `tests/test_register.py` pins the hash to `run-logs/register.sha256`; `run_checks.py` runs it, so the sweep pre-flight refuses a register other than the anchored one |
 
 A18 is the mirror class: checks described as falsifying a bug that
 could not fail on it. Found by putting each audit-drawer bug back and
 watching the suite: nine of eleven were caught, these two were not.
+
+A20 is A18's class again, found by the same method once it was
+automated. `mutation_test.py` puts each drawer bug that has a code-level
+fix back into a scratch copy and requires the suite to fail on it; the
+drawer rows with no mutant are listed in its `HAND_AUDIT` with the
+reason, and a drawer row in neither place fails the run. CI runs it.
 
 A3, A13, A15 are one class: code described as running that had never
 resolved. The last two landed in the turn that introduced the `[t]`/

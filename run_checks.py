@@ -11,6 +11,7 @@ GROUPS = [
     ("core",      "tests/test_core.py"),
     ("structure", "tests/test_structure.py"),
     ("growth",    "tests/test_growth.py"),
+    ("register",  "tests/test_register.py"),
 ]
 
 
